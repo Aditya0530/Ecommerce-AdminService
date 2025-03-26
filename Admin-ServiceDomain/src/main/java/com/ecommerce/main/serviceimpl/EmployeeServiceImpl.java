@@ -3,7 +3,10 @@ package com.ecommerce.main.serviceimpl;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +14,7 @@ import com.ecommerce.main.dto.EmployeeDto;
 import com.ecommerce.main.enums.InventoryRole;
 import com.ecommerce.main.exceptions.ImageNotUpdateException;
 import com.ecommerce.main.exceptions.FileNotSavedException;
+import com.ecommerce.main.exceptions.ValidationException;
 import com.ecommerce.main.model.Employee;
 import com.ecommerce.main.repository.EmployeeRepository;
 import com.ecommerce.main.service.EmployeeService;
@@ -18,13 +22,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
 	
+	@Autowired
+	private Validator validator;
 	
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -43,6 +54,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 			
 			e.printStackTrace();
 		}
+		validateEmployee(employee);
+		
 		if ("admin".equalsIgnoreCase(employee.getRole())) {
 		    employee.setInventoryRole(InventoryRole.ADMIN);  
 		} else if ("delivery".equalsIgnoreCase(employee.getRole())) {
@@ -110,5 +123,17 @@ public class EmployeeServiceImpl implements EmployeeService {
           }		
 	}
 
+	
+	private void validateEmployee(Employee employee) {
+		Set<ConstraintViolation<Employee>> violations = validator.validate(employee);
+		if (!violations.isEmpty()) {
+			Map<String, String> errors = new HashMap<>();
+			for (ConstraintViolation<Employee> violation : violations) {
+				errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+			}
+			log.error("Product validation failed: {}", errors);
+			throw new ValidationException(errors);
+		}
+	}
 	
 }

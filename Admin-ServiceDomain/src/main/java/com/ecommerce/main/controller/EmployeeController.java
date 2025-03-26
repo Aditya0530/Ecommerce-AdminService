@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.ecommerce.main.dto.EmployeeDto;
+
 import com.ecommerce.main.service.EmployeeService;
+
 
 @RestController
 @RequestMapping("/employee")
@@ -22,7 +24,9 @@ public class EmployeeController {
 	
 	@PostMapping("/postEmployee")
 	public ResponseEntity<EmployeeDto> saveAdmin(@RequestPart("employeeData") String employee,@RequestPart("imageData") MultipartFile multipartFile){
+
 		EmployeeDto adminDto=employeeservice.saveEmployee(employee, multipartFile);
+
 		return new ResponseEntity<>(adminDto,HttpStatus.CREATED);
 	}
 	
