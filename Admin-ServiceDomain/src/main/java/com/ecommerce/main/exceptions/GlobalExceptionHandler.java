@@ -24,11 +24,19 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errDto, HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(ImageNotUpdateException.class)
+	public ResponseEntity<ErrorDto> EmployeeAndImageNotUpdateException(ImageNotUpdateException ex) {
+		ErrorDto errDto=new ErrorDto(ex.getMessage());
+		return new ResponseEntity<>(errDto, HttpStatus.BAD_REQUEST);
+	}
+	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorDto> handleParentException(Exception ex) {
 		ErrorDto errDto=new ErrorDto(ex.getMessage());
 		return new ResponseEntity<>(errDto,HttpStatus.INTERNAL_SERVER_ERROR);
 		
 	}
+	
+	
 
 }

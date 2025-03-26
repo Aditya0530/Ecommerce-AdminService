@@ -1,23 +1,19 @@
 package com.ecommerce.main.serviceimpl;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.System.Logger;
+import java.sql.Date;
+import java.sql.Time;
 import java.util.Random;
-
-import org.hibernate.validator.internal.util.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.ecommerce.main.dto.EmployeeDto;
 import com.ecommerce.main.enums.InventoryRole;
+import com.ecommerce.main.exceptions.ImageNotUpdateException;
 import com.ecommerce.main.exceptions.FileNotSavedException;
 import com.ecommerce.main.model.Employee;
 import com.ecommerce.main.repository.EmployeeRepository;
 import com.ecommerce.main.service.EmployeeService;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,5 +79,36 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Employee savedAdmin = employeeRepository.save(employee);
 		return new EmployeeDto(savedAdmin);
 	}
+
+	@Override
+	public void updateEmployee(int empId, String employeeJson, MultipartFile multipartFile) {
+
+          Employee employee=null;
+          
+          try {
+  			employee =objectMapper.readValue(employeeJson, Employee.class);
+  		}
+  		catch(Exception e) {
+  				e.printStackTrace();
+  				System.out.println(e.getMessage());
+  			}
+          if(multipartFile.isEmpty()) {
+        	  throw new ImageNotUpdateException("Image can't be Empty..");
+  		  }
+          else {
+		try {
+			Date date=new Date(System.currentTimeMillis());
+			Time time=new Time(System.currentTimeMillis());
+		employeeRepository.updateData(employee.getName(),employee.getUsername(),employee.getEmail(),employee.getPassword(),
+				employee.getInventoryRole(),employee.getRole(),employee.getPhoneNumber(),date,time,multipartFile.getBytes(),empId);
+
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+           System.out.println(e.getMessage());
+		}	
+          }		
+	}
+
 	
 }

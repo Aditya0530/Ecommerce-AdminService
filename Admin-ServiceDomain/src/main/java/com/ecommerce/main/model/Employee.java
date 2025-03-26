@@ -1,18 +1,10 @@
 package com.ecommerce.main.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import org.hibernate.annotations.UpdateTimestamp;
-
 import com.ecommerce.main.enums.InventoryRole;
-
 import java.sql.Date;
 import java.sql.Time;
 
@@ -54,5 +46,6 @@ public class Employee {
 		this.createDate = new Date(System.currentTimeMillis());
 		this.createTime = new Time(System.currentTimeMillis());
 	}
+	
 
 }
