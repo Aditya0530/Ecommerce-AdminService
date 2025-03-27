@@ -2,6 +2,8 @@ package com.ecommerce.main.repository;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -13,6 +15,10 @@ import jakarta.transaction.Transactional;
 
 
 public interface EmployeeRepository extends CrudRepository<Employee, Integer>{
+	
+	
+    public Optional<Employee> findByUsername(String username);
+
 
 	@Modifying
 	@Transactional

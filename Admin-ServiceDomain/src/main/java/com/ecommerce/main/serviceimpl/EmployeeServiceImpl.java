@@ -40,6 +40,27 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
+	 @Override
+	 public Object loginEmployee(String username, String password) {
+	     
+		 // If "admin" logs in, return all employees
+		 if ("admin".equalsIgnoreCase(username) && "admin".equalsIgnoreCase(password)) {
+	            return employeeRepository.findAll();  // Return list of all employees
+	     }
+
+	     // Otherwise, return only the matching employee's details
+	     Employee employee = employeeRepository.findByUsername(username)
+	    		 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+	     if (!employee.getPassword().equals(password)) {
+	    	 throw new IllegalArgumentException("Invalid username or password");
+	     }
+
+	        return new EmployeeDto(employee);  // Return only the logged-in employee's details
+	 }
+
+	
+	
 	@Override
 	public EmployeeDto saveEmployee(String json,MultipartFile multipartFile) {
 		

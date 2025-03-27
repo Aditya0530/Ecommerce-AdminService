@@ -9,4 +9,6 @@ public interface EmployeeService {
 
 	public void updateEmployee(int empId, String employeeJson, MultipartFile multipartFile);
 
+	public Object loginEmployee(String username, String password);
+
 }
