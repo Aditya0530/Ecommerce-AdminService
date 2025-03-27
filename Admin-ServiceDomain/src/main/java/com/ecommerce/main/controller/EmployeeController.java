@@ -24,9 +24,7 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeservice;
-	
-	@Autowired
-	private EmailService emailservice;
+
 	
 	@GetMapping("/login/{username}/{password}")
 	public ResponseEntity<Object> login(@PathVariable String username, @PathVariable String password) {
@@ -38,7 +36,6 @@ public class EmployeeController {
 	@PostMapping("/postEmployee")
 	public ResponseEntity<EmployeeDto> saveAdmin(@RequestPart("employeeData") String employee,@RequestPart("imageData") MultipartFile multipartFile){
 		EmployeeDto adminDto=employeeservice.saveEmployee(employee, multipartFile);
-		emailservice.sendSimpleMail(adminDto.getEmail(),"Welcome to our PlatFrom","Dear "+adminDto.getName()+",\n\n Your account has been successfully created.\n\nBest Regards,\nTeam");
 		return new ResponseEntity<>(adminDto,HttpStatus.CREATED);
 	   
 	}

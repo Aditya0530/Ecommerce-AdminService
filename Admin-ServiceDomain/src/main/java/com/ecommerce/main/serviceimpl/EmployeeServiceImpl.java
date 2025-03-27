@@ -22,6 +22,7 @@ import com.ecommerce.main.exceptions.FileNotSavedException;
 import com.ecommerce.main.exceptions.ValidationException;
 import com.ecommerce.main.model.Employee;
 import com.ecommerce.main.repository.EmployeeRepository;
+import com.ecommerce.main.service.EmailService;
 import com.ecommerce.main.service.EmployeeService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -45,7 +46,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
-	
+	@Autowired
+	private EmailService emailservice;
 	
 	 @Override
 	 public Object loginEmployee(String username, String password) {
@@ -72,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public EmployeeDto saveEmployee(String json,MultipartFile multipartFile) {
 		
-		Employee employee=null;
+		Employee employee=new Employee();
 		
 		try {
 			employee =objectMapper.readValue(json, Employee.class);
@@ -119,6 +121,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		employee.setUsername(generateduserName);
 		employee.setPassword(passWord);
 		Employee savedAdmin = employeeRepository.save(employee);
+		emailservice.sendEmailMessage(employee);
 		return new EmployeeDto(savedAdmin);
 	}
 
