@@ -1,5 +1,6 @@
 package com.ecommerce.main.exceptions;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,13 @@ public class GlobalExceptionHandler {
 		
 	}
 	
+	@ExceptionHandler(InvalidCredentialsException.class)
+	public ResponseEntity<Object> handleInvalidCredentials(InvalidCredentialsException ex) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("error", ex.getMessage());
+	    response.put("timestamp", LocalDateTime.now());
+	    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+	}
 	
 
 }

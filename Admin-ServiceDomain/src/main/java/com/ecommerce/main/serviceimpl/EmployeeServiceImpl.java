@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ecommerce.main.dto.EmployeeDto;
 import com.ecommerce.main.enums.InventoryRole;
 import com.ecommerce.main.exceptions.ImageNotUpdateException;
+import com.ecommerce.main.exceptions.InvalidCredentialsException;
 import com.ecommerce.main.exceptions.FileNotSavedException;
 import com.ecommerce.main.exceptions.ValidationException;
 import com.ecommerce.main.model.Employee;
@@ -42,22 +43,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 	
 	 @Override
 	 public Object loginEmployee(String username, String password) {
-	     
-		 // If "admin" logs in, return all employees
-		 if ("admin".equalsIgnoreCase(username) && "admin".equalsIgnoreCase(password)) {
-	            return employeeRepository.findAll();  // Return list of all employees
-	     }
+		    
+		    // If "admin" logs in, return all employees
+		    if ("admin".equalsIgnoreCase(username) && "admin".equalsIgnoreCase(password)) {
+		        return employeeRepository.findAll();  // Return list of all employees
+		    }
 
-	     // Otherwise, return only the matching employee's details
-	     Employee employee = employeeRepository.findByUsername(username)
-	    		 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+		    // Find employee by username
+		    Employee employee = employeeRepository.findByUsername(username)
+		            .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
 
-	     if (!employee.getPassword().equals(password)) {
-	    	 throw new IllegalArgumentException("Invalid username or password");
-	     }
+		    // Check if password is correct
+		    if (!employee.getPassword().equals(password)) {
+		        throw new InvalidCredentialsException("Invalid username or password");
+		    }
 
-	        return new EmployeeDto(employee);  // Return only the logged-in employee's details
-	 }
+		    return new EmployeeDto(employee);  // Return only the logged-in employee's details
+		}
 
 	
 	
