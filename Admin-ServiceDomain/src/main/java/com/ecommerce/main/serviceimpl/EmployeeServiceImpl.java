@@ -171,10 +171,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
 
-	@Override
-	public void sendSimpleMail(MailDetailsDto mailDetails) {
-		// TODO Auto-generated method stub
-		
-	}
+
 	
 }

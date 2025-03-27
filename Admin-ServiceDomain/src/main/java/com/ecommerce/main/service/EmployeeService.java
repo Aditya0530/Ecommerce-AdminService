@@ -12,7 +12,7 @@ public interface EmployeeService {
 
 	public Object loginEmployee(String username, String password);
 	
-	public void sendSimpleMail(MailDetailsDto mailDetails);
+
 
 
 
