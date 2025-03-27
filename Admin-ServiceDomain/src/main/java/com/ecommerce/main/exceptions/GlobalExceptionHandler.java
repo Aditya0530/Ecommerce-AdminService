@@ -25,6 +25,11 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(errDto, HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<Map<String,String>> handleValidException(ValidationException ex) {
+		Map<String,String> errorResponse=new HashMap<>(ex.getError());
+		return new ResponseEntity<Map<String,String>>(errorResponse, HttpStatus.BAD_REQUEST);
+	}
 	@ExceptionHandler(ImageNotUpdateException.class)
 	public ResponseEntity<ErrorDto> EmployeeAndImageNotUpdateException(ImageNotUpdateException ex) {
 		ErrorDto errDto=new ErrorDto(ex.getMessage());

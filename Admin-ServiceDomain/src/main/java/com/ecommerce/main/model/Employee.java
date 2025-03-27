@@ -3,6 +3,7 @@ package com.ecommerce.main.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ public class Employee {
 
 	@NotBlank(message = "Name cannot be blank")
 	@Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
+	@NotNull(message = "Name Cannot Be Null")
 	private String name;
 
 	private String username;
