@@ -1,37 +1,65 @@
 package com.ecommerce.main.serviceimpl;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.System.Logger;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
-
-import org.hibernate.validator.internal.util.logging.LoggerFactory;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.ecommerce.main.dto.EmployeeDto;
 import com.ecommerce.main.enums.InventoryRole;
+import com.ecommerce.main.exceptions.ImageNotUpdateException;
 import com.ecommerce.main.exceptions.FileNotSavedException;
+import com.ecommerce.main.exceptions.ValidationException;
 import com.ecommerce.main.model.Employee;
 import com.ecommerce.main.repository.EmployeeRepository;
 import com.ecommerce.main.service.EmployeeService;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
 	
+	@Autowired
+	private Validator validator;
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	 @Override
+	 public Object loginEmployee(String username, String password) {
+	     
+		 // If "admin" logs in, return all employees
+		 if ("admin".equalsIgnoreCase(username) && "admin".equalsIgnoreCase(password)) {
+	            return employeeRepository.findAll();  // Return list of all employees
+	     }
+
+	     // Otherwise, return only the matching employee's details
+	     Employee employee = employeeRepository.findByUsername(username)
+	    		 .orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
+
+	     if (!employee.getPassword().equals(password)) {
+	    	 throw new IllegalArgumentException("Invalid username or password");
+	     }
+
+	        return new EmployeeDto(employee);  // Return only the logged-in employee's details
+	 }
+
+	
 	
 	@Override
 	public EmployeeDto saveEmployee(String json,MultipartFile multipartFile) {
@@ -47,6 +75,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 			
 			e.printStackTrace();
 		}
+		validateEmployee(employee);
+		
 		if ("admin".equalsIgnoreCase(employee.getRole())) {
 		    employee.setInventoryRole(InventoryRole.ADMIN);  
 		} else if ("delivery".equalsIgnoreCase(employee.getRole())) {
@@ -82,6 +112,49 @@ public class EmployeeServiceImpl implements EmployeeService {
 		employee.setPassword(passWord);
 		Employee savedAdmin = employeeRepository.save(employee);
 		return new EmployeeDto(savedAdmin);
+	}
+
+	@Override
+	public void updateEmployee(int empId, String employeeJson, MultipartFile multipartFile) {
+
+          Employee employee=null;
+          
+          try {
+  			employee =objectMapper.readValue(employeeJson, Employee.class);
+  		}
+  		catch(Exception e) {
+  				e.printStackTrace();
+  				System.out.println(e.getMessage());
+  			}
+          if(multipartFile.isEmpty()) {
+        	  throw new ImageNotUpdateException("Image can't be Empty..");
+  		  }
+          else {
+		try {
+			Date date=new Date(System.currentTimeMillis());
+			Time time=new Time(System.currentTimeMillis());
+		employeeRepository.updateData(employee.getName(),employee.getUsername(),employee.getEmail(),employee.getPassword(),
+				employee.getInventoryRole(),employee.getRole(),employee.getPhoneNumber(),date,time,multipartFile.getBytes(),empId);
+
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+           System.out.println(e.getMessage());
+		}	
+          }		
+	}
+
+	
+	private void validateEmployee(Employee employee) {
+		Set<ConstraintViolation<Employee>> violations = validator.validate(employee);
+		if (!violations.isEmpty()) {
+			Map<String, String> errors = new HashMap<>();
+			for (ConstraintViolation<Employee> violation : violations) {
+				errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+			}
+			log.error("Product validation failed: {}", errors);
+			throw new ValidationException(errors);
+		}
 	}
 	
 }
