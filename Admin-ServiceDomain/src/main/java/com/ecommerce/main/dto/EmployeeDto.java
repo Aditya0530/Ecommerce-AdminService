@@ -21,6 +21,7 @@ public class EmployeeDto {
 	private String name;
 	private String username;
 	private InventoryRole inventoryRole;
+	private String email;
 	private Date createDate; // Stores the current date (yyyy-MM-dd)
 	private Time createTime;
 
@@ -29,7 +30,9 @@ public class EmployeeDto {
 		this.name = employee.getName();
 		this.username = employee.getUsername();
 		this.inventoryRole = employee.getInventoryRole();
+		this.email=employee.getEmail();
 		this.createDate = employee.getCreateDate();
 		this.createTime = employee.getCreateTime();
+		
 	}
 }

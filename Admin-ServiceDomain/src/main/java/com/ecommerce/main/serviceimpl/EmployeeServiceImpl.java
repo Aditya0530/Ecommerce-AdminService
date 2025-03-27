@@ -8,9 +8,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.ecommerce.main.dto.EmployeeDto;
+import com.ecommerce.main.dto.MailDetailsDto;
 import com.ecommerce.main.enums.InventoryRole;
 import com.ecommerce.main.exceptions.ImageNotUpdateException;
 import com.ecommerce.main.exceptions.InvalidCredentialsException;
@@ -40,6 +44,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	
 	
 	 @Override
 	 public Object loginEmployee(String username, String password) {
@@ -158,5 +164,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 			throw new ValidationException(errors);
 		}
 	}
+
+
+
+	
+
+
+
+
 	
 }
