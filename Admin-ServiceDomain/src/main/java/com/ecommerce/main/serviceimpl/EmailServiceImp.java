@@ -43,12 +43,6 @@ public class EmailServiceImp implements EmailService {
 		} else if (employeeEmail.getInventoryRole() == InventoryRole.ORDERDELIVERY_HEAD) {
 			message += "As the *Order Delivery Head*, you will oversee order dispatch, manage logistics, and ensure timely deliveries. "
 					+ "Your role is essential in providing customers with a seamless shopping experience.\n\n";
-		} else if (employeeEmail.getInventoryRole() == InventoryRole.CRM) {
-			message += "As a *Customer Relationship Manager (CRM)*, you are responsible for handling customer interactions, resolving issues, and enhancing customer satisfaction. "
-					+ "Your dedication helps build lasting relationships with our customers.\n\n";
-		} else if (employeeEmail.getInventoryRole() == InventoryRole.ACCOUNT_HEAD) {
-			message += "As the *Accounts Head*, you will manage company finances, oversee transactions, and ensure accurate bookkeeping. "
-					+ "Your expertise helps maintain the financial health of our company.\n\n";
 		} else if (employeeEmail.getInventoryRole() == InventoryRole.HEAD) {
 			message += "As an *Employee*, you play a key role in supporting our e-commerce operations. "
 					+ "Your contributions are valuable in helping us grow and serve our customers better.\n\n";

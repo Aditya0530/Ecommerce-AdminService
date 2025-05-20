@@ -54,10 +54,16 @@ public class Employee {
 	@Column(length = 999999999)
 	private byte[] imageFile;
 
+	@PrePersist
+	public void onCreate() {
+	    this.createDate = new Date(System.currentTimeMillis());
+	    this.createTime = new Time(System.currentTimeMillis());
+	}
+
 	@PreUpdate
 	public void onUpdate() {
-		this.createDate = new Date(System.currentTimeMillis());
-		this.createTime = new Time(System.currentTimeMillis());
+	    this.createDate = new Date(System.currentTimeMillis());
+	    this.createTime = new Time(System.currentTimeMillis());
 	}
 
 }

@@ -3,6 +3,7 @@ package com.ecommerce.main.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import com.ecommerce.main.dto.EmployeeDto;
 import com.ecommerce.main.dto.MailDetailsDto;
+import com.ecommerce.main.model.Employee;
 import com.ecommerce.main.service.EmailService;
 import com.ecommerce.main.service.EmployeeService;
 
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/employee")
 public class EmployeeController {
@@ -45,6 +47,11 @@ public class EmployeeController {
 			@RequestPart("employee") String employeeJson, @RequestPart("imageData") MultipartFile multipartFile) {
 		employeeservice.updateEmployee(empId, employeeJson, multipartFile);
 		return new ResponseEntity<String>("Update Successful", HttpStatus.OK);
+	}
+	@GetMapping("/getEmployees")
+	public ResponseEntity<Iterable<Employee>> getAllEmployee() {
+		Iterable<Employee> employee=employeeservice.getEmployees();
+		return new ResponseEntity<>(employee, HttpStatus.OK);
 	}
 	
 }

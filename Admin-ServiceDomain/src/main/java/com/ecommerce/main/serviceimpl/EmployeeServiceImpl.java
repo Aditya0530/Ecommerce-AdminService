@@ -7,12 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import com.ecommerce.main.dto.EmployeeDto;
 import com.ecommerce.main.dto.MailDetailsDto;
 import com.ecommerce.main.enums.InventoryRole;
@@ -49,11 +53,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private EmailService emailservice;
 	
+	private static final Logger log = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+	
 	 @Override
 	 public Object loginEmployee(String username, String password) {
 		    
 		    // If "admin" logs in, return all employees
 		    if ("admin".equalsIgnoreCase(username) && "admin".equalsIgnoreCase(password)) {
+		    	log.info("Admin login successful, fetching all employees.");
 		        return employeeRepository.findAll();  // Return list of all employees
 		    }
 
@@ -90,11 +97,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if ("admin".equalsIgnoreCase(employee.getRole())) {
 		    employee.setInventoryRole(InventoryRole.ADMIN);  
 		} else if ("delivery".equalsIgnoreCase(employee.getRole())) {
-			employee.setInventoryRole(InventoryRole.ORDERDELIVERY_HEAD);  
-		} else if ("crm".equalsIgnoreCase(employee.getRole())) {
-			employee.setInventoryRole(InventoryRole.CRM);  
-		} else if ("account".equalsIgnoreCase(employee.getRole())) {
-			employee.setInventoryRole(InventoryRole.ACCOUNT_HEAD);  
+			employee.setInventoryRole(InventoryRole.ORDERDELIVERY_HEAD);    
 		} else if ("employee".equalsIgnoreCase(employee.getRole())) {
 			employee.setInventoryRole(InventoryRole.HEAD);
 		} else {
@@ -107,6 +110,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		String passWord=firstName.toLowerCase()+"@"+randomNo.nextInt(1000);	
 		
 		if(multipartFile.isEmpty()) {
+			log.error("File upload failed: file is empty.");
 			throw new FileNotSavedException("File Not Be Empty");
 		}
 		
@@ -114,14 +118,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 			try {
 				employee.setImageFile(multipartFile.getBytes());
 			} catch (IOException e) {
-				
+				log.error("Error processing uploaded file: {}", e.getMessage(), e);
 				e.printStackTrace();
 			}
 		}
 		employee.setUsername(generateduserName);
 		employee.setPassword(passWord);
 		Employee savedAdmin = employeeRepository.save(employee);
+		log.info("Employees Saved To Database Successfully {}"+savedAdmin);
 		emailservice.sendEmailMessage(employee);
+		log.info("Welcome email sent to {}", employee.getEmail());
 		return new EmployeeDto(savedAdmin);
 	}
 
@@ -166,6 +172,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 			log.error("Product validation failed: {}", errors);
 			throw new ValidationException(errors);
 		}
+	}
+
+
+
+	@Override
+	public Iterable<Employee> getEmployees() {
+		// TODO Auto-generated method stub
+		return employeeRepository.findAll();
 	}
 
 
